@@ -2,9 +2,9 @@
   "name": "video-recorder",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "src/main.ts",
   "scripts": {
-    "dev": "ts-node-dev -r dotenv/config ./src/index.ts"
+    "dev": "ts-node-dev -r dotenv/config ./src/main.ts"
   },
   "keywords": [],
   "author": "Gustavo A. <gustavo.atencio@outlook.com>",
