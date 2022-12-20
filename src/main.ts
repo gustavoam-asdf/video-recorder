@@ -1,7 +1,11 @@
+import { chromium } from "playwright"
+
 async function main() {
-	await new Promise(resolve => setTimeout(() => {
-		console.log("Hello, world!")
-	}, 1000))
+	const browser = await chromium.launch({ headless: false })
+	const page = await browser.newPage()
+	await page.goto("https://www.google.com")
+	await page.screenshot({ path: "./screenshots/google.png" })
+	await browser.close()
 }
 
 main()
