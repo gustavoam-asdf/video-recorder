@@ -16,8 +16,12 @@ async function main() {
 
 	await page.goto(WEB_TARGET)
 
+	await page.$eval("div.post-content > div > div", (videoContainer: HTMLDivElement) => {
+		const videoCards = videoContainer.querySelectorAll("div >  div > a")
+		console.log(videoCards)
+	})
 
-	await sleep(20000)
+	await sleep(10000)
 	await browser.close()
 }
 
