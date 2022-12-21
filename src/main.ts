@@ -29,7 +29,8 @@ async function main() {
 	})
 	const context = await browser.newContext()
 
-	context.addCookies(storage.cookies as unknown as any[])
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	await context.addCookies(storage.cookies as unknown as any[])
 
 	const page = await context.newPage()
 
