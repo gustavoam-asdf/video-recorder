@@ -5,9 +5,12 @@ import { sleep } from "./utils"
 
 async function main() {
 	const browser = await chromium.launch({
-		headless: false
+		headless: false,
+		args: ["--start-maximized"],
 	})
-	const context = await browser.newContext()
+	const context = await browser.newContext({
+		viewport: null,
+	})
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	await context.addCookies(cookies as unknown as any[])
