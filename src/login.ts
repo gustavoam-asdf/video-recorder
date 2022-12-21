@@ -7,13 +7,11 @@ export async function login({ context, page }: { context: Context, page: Page })
 	await page.$eval("#user_login",
 		(target: HTMLInputElement) => {
 			target.value = USER_NAME
-			return target.value
 		}
 	)
 	await page.$eval("#user_pass",
 		(target: HTMLInputElement) => {
 			target.value = USER_PASS
-			return target.value
 		}
 	)
 

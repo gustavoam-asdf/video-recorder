@@ -6,6 +6,7 @@ import { sleep } from "./utils"
 async function main() {
 	const browser = await chromium.launch({
 		headless: false,
+		executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
 		args: ["--start-maximized"],
 	})
 	const context = await browser.newContext({
@@ -40,8 +41,6 @@ async function main() {
 		console.log("Video card clicked")
 	})
 
-	await sleep(50000)
-	await browser.close()
 }
 
 main()
