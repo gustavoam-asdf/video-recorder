@@ -1,46 +1,11 @@
+import { Page, chromium } from "playwright"
 import { USER_NAME, USER_PASS, WEB_DOMAIN, WEB_TARGET } from "./config"
 
-import { chromium } from "playwright"
+import { Context } from "vm"
 import { sleep } from "./utils"
+import storage from "./data/storage.json"
 
-async function main() {
-	const browser = await chromium.launch({
-		headless: false
-	})
-	const context = await browser.newContext()
-	const expireTime = Math.ceil(new Date().getTime() / 1000 + 1000 * 60 * 60 * 24 * 365)
-
-	context.addCookies([
-		{
-			name: "userName",
-			value: USER_NAME,
-			domain: WEB_DOMAIN,
-			path: "/",
-			expires: expireTime,
-			httpOnly: true,
-			secure: true,
-			sameSite: "Lax"
-		},
-	])
-
-	context.addCookies([
-		{
-			name: "password",
-			value: USER_PASS,
-			domain: WEB_DOMAIN,
-			path: "/",
-			expires: expireTime,
-			httpOnly: true,
-			secure: true,
-			sameSite: "Lax"
-		},
-	])
-
-
-	const page = await context.newPage()
-
-	await page.goto(WEB_TARGET)
-
+async function login({ context, page }: { context: Context, page: Page }) {
 	await page.$eval("#user_login",
 		(target: HTMLInputElement) => {
 			target.value = USER_NAME
@@ -53,9 +18,24 @@ async function main() {
 			return target.value
 		}
 	)
-	await page.click("#wp-submit")
 
-	await context.storageState({ path: "./data/storage.json" })
+	await page.click("#wp-submit")
+	await context.storageState({ path: "./src/data/storage.json" })
+}
+
+async function main() {
+	const browser = await chromium.launch({
+		headless: false
+	})
+	const context = await browser.newContext()
+
+	context.addCookies(storage.cookies as unknown as any[])
+
+	const page = await context.newPage()
+
+	await page.goto(WEB_TARGET)
+
+
 	await sleep(10000)
 	await browser.close()
 }
