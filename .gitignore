@@ -106,3 +106,5 @@ dist
 screenshots
 build/*
 */data/*
+
+**/videos/**
