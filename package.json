@@ -4,7 +4,9 @@
   "description": "",
   "main": "src/main.ts",
   "scripts": {
-    "dev": "ts-node-dev -r dotenv/config ./src/main.ts"
+    "start": "node -r dotenv/config ./build/main.js",
+    "dev": "ts-node -r dotenv/config ./src/main.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "Gustavo A. <gustavo.atencio@outlook.com>",
@@ -16,7 +18,7 @@
     "dotenv": "16.0.3",
     "eslint": "8.30.0",
     "playwright": "1.29.0",
-    "ts-node-dev": "2.0.0"
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "obs-websocket-js": "5.0.2",
