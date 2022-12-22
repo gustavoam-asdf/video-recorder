@@ -22,8 +22,11 @@ async function main() {
 
 	page.on("requestfinished", async request => {
 		if (!request.url().includes("player.vimeo.com/video")) return
+		await page.waitForSelector("div.ilightbox-holder.dark")
+
 		const videoFrame = page.frames().find(frame => frame.url().includes("player.vimeo.com/video"))
 		if (!videoFrame) return
+
 		const { x, y } = await videoFrame.evaluate(() => {
 			const viewPortWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 			const viewPortHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
@@ -32,7 +35,7 @@ async function main() {
 				y: viewPortHeight / 2,
 			}
 		})
-		await sleep(3000)
+
 		await page.mouse.click(x, y)
 	})
 
