@@ -24,11 +24,16 @@ async function main() {
 		if (!request.url().includes("player.vimeo.com/video")) return
 		const videoFrame = page.frames().find(frame => frame.url().includes("player.vimeo.com/video"))
 		if (!videoFrame) return
-		videoFrame.$$eval("button", (buttons) => {
-			console.log({ buttons })
+		const { x, y } = await videoFrame.evaluate(() => {
+			const viewPortWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+			const viewPortHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+			return {
+				x: viewPortWidth / 2,
+				y: viewPortHeight / 2,
+			}
 		})
-		await sleep(10000)
-		await page.mouse.click(500, 500)
+		await sleep(3000)
+		await page.mouse.click(x, y)
 	})
 
 	await page.$eval("div.post-content > div > div", (videoContainer: HTMLDivElement) => {
