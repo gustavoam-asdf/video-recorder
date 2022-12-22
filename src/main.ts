@@ -41,9 +41,10 @@ async function main() {
 		const videoDuration = await videoFrame.evaluate(() => {
 			const video = document.querySelector("video")
 			if (!video) return 0
-			return video.duration
+			return Math.ceil(video.duration * 1000)
 		})
-		console.log({ videoDuration })
+		await sleep(videoDuration)
+
 	})
 
 	await page.$eval("div.post-content > div > div", (videoContainer: HTMLDivElement) => {
