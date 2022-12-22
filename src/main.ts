@@ -1,9 +1,13 @@
-import { OBS_WEB_SOCKET_URL, WEB_TARGET } from "./config"
+import {
+	ENABLE_RECORD,
+	OBS_WEB_SOCKET_URL,
+	WEB_TARGET
+} from "./config"
+
+import OBSWebSocket from "obs-websocket-js"
 import { chromium } from "playwright"
 import { cookies } from "./data/storage.json"
 import { sleep } from "./utils"
-import OBSWebSocket from "obs-websocket-js"
-
 
 async function main() {
 	const obsWS = new OBSWebSocket()
@@ -44,15 +48,17 @@ async function main() {
 		await videoFrame.waitForSelector("video")
 		await page.mouse.click(x, y)
 		await sleep(1000)
-		await obsWS.call("StartRecord")
-		const videoDuration = await videoFrame.evaluate(() => {
-			const video = document.querySelector("video")
-			if (!video) return 0
-			return Math.ceil(video.duration * 1000)
-		})
-		await sleep(videoDuration)
-		await obsWS.call("StopRecord")
-
+		if (ENABLE_RECORD) {
+			await obsWS.call("StartRecord")
+			const videoDuration = await videoFrame.evaluate(() => {
+				const video = document.querySelector("video")
+				if (!video) return 0
+				return Math.ceil(video.duration * 1000)
+			})
+			await sleep(videoDuration)
+			await obsWS.call("StopRecord")
+		}
+		await page.mouse.click(0, 0)
 	})
 
 	await page.$eval("div.post-content > div > div", (videoContainer: HTMLDivElement) => {
