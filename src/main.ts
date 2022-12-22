@@ -1,9 +1,15 @@
-import { WEB_TARGET } from "./config"
+import { OBS_WEB_SOCKET_URL, WEB_TARGET } from "./config"
 import { chromium } from "playwright"
 import { cookies } from "./data/storage.json"
 import { sleep } from "./utils"
+import OBSWebSocket from "obs-websocket-js"
+
 
 async function main() {
+	const obsWS = new OBSWebSocket()
+	await obsWS.connect(OBS_WEB_SOCKET_URL).then(() => {
+		console.log("Connected to OBS")
+	})
 	const browser = await chromium.launch({
 		headless: false,
 		executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
