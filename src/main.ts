@@ -27,7 +27,7 @@ async function main() {
 		const videoFrame = page.frames().find(frame => frame.url().includes("player.vimeo.com/video"))
 		if (!videoFrame) return
 
-		const { x, y } = await videoFrame.evaluate(() => {
+		const { x, y } = await page.evaluate(() => {
 			const viewPortWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 			const viewPortHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
 			return {
@@ -37,6 +37,13 @@ async function main() {
 		})
 		await videoFrame.waitForSelector("video")
 		await page.mouse.click(x, y)
+		await sleep(1000)
+		const videoDuration = await videoFrame.evaluate(() => {
+			const video = document.querySelector("video")
+			if (!video) return 0
+			return video.duration
+		})
+		console.log({ videoDuration })
 	})
 
 	await page.$eval("div.post-content > div > div", (videoContainer: HTMLDivElement) => {
