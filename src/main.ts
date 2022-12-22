@@ -44,12 +44,14 @@ async function main() {
 		await videoFrame.waitForSelector("video")
 		await page.mouse.click(x, y)
 		await sleep(1000)
+		await obsWS.call("StartRecord")
 		const videoDuration = await videoFrame.evaluate(() => {
 			const video = document.querySelector("video")
 			if (!video) return 0
 			return Math.ceil(video.duration * 1000)
 		})
 		await sleep(videoDuration)
+		await obsWS.call("StopRecord")
 
 	})
 
