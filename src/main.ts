@@ -35,7 +35,7 @@ async function main() {
 				y: viewPortHeight / 2,
 			}
 		})
-
+		await videoFrame.waitForSelector("video")
 		await page.mouse.click(x, y)
 	})
 
