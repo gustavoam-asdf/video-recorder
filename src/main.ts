@@ -50,7 +50,7 @@ async function main() {
 		})
 		await videoFrame.waitForSelector("video")
 		await page.mouse.click(x, y)
-		await sleep(3000)
+		await sleep(1000)
 		if (ENABLE_RECORD) {
 			await obsWS.call("StartRecord")
 			const videoDuration = await videoFrame.evaluate(() => {
