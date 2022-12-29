@@ -48,7 +48,7 @@ async function main() {
 		})
 		await videoFrame.waitForSelector("video")
 		await page.mouse.click(x, y)
-		await sleep(1000)
+		await sleep(3000)
 		if (ENABLE_RECORD) {
 			await obsWS.call("StartRecord")
 			const videoDuration = await videoFrame.evaluate(() => {
@@ -56,36 +56,30 @@ async function main() {
 				if (!video) return 0
 				return Math.ceil(video.duration * 1000)
 			})
+			console.log({ videoDuration })
 			await sleep(videoDuration)
 			await obsWS.call("StopRecord")
 		}
 		await page.mouse.click(0, 0)
 	})
 
-	await page.$eval("div.post-content > div > div", (videoContainer: HTMLDivElement) => {
-		const videoCards = videoContainer.querySelectorAll("div >  div > a")
-		const videoCard = videoCards[0] as unknown as HTMLAnchorElement
-		videoCard.click()
-		return videoCards
-	}).then(() => {
-		console.log("Started video card clicked")
-	})
-
-	page.on("requestfinished", async request => {
-		if (!request.url().includes("player.vimeo.com/video")) return
-		console.log("Request finished")
-	})
-
 	let ignoreDivs = 2
+	await page.dispatchEvent(
+		`div.post-content > div > div div:nth-child(${ignoreDivs++}) > div > a`,
+		"click"
+	)
+	console.log("Started video card clicked")
 
 	obsWS.addListener("RecordStateChanged", async recordStatus => {
-		if (recordStatus.outputActive) return
+		if (recordStatus.outputState !== "OBS_WEBSOCKET_OUTPUT_STOPPED") return
+		console.log({ videoPath: (recordStatus as unknown as { outputPath: string }).outputPath })
+
 		await page.dispatchEvent(
-			`div.post-content > div > div div:nth-child(${ignoreDivs}) > div > a`,
+			`div.post-content > div > div div:nth-child(${ignoreDivs++}) > div > a`,
 			"click"
 		)
-		await page.mouse.click(0, 0)
-		ignoreDivs++
+		console.log("Next video card clicked")
+
 	})
 
 }
