@@ -14,6 +14,7 @@ async function main() {
 	await obsWS.connect(OBS_WEB_SOCKET_URL).then(() => {
 		console.log("Connected to OBS")
 	})
+
 	const browser = await chromium.launch({
 		headless: false,
 		executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
@@ -66,9 +67,25 @@ async function main() {
 		const videoCard = videoCards[0] as unknown as HTMLAnchorElement
 		videoCard.click()
 		return videoCards
-	}).then((videoCards) => {
-		// console.log({ videoCards })
-		console.log("Video card clicked")
+	}).then(() => {
+		console.log("Started video card clicked")
+	})
+
+	page.on("requestfinished", async request => {
+		if (!request.url().includes("player.vimeo.com/video")) return
+		console.log("Request finished")
+	})
+
+	let ignoreDivs = 2
+
+	obsWS.addListener("RecordStateChanged", async recordStatus => {
+		if (recordStatus.outputActive) return
+		await page.dispatchEvent(
+			`div.post-content > div > div div:nth-child(${ignoreDivs}) > div > a`,
+			"click"
+		)
+		await page.mouse.click(0, 0)
+		ignoreDivs++
 	})
 
 }
