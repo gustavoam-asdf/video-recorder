@@ -45,8 +45,12 @@ async function main() {
 
 	await page.goto(WEB_TARGET)
 
+	let videoRequestReceived = false
+
 	page.on("requestfinished", async request => {
 		if (!request.url().startsWith("https://player.vimeo.com/video")) return
+		if (videoRequestReceived) return
+		videoRequestReceived = true
 		console.log({ videoUrl: request.url() })
 		await page.waitForSelector("div.ilightbox-holder.dark")
 		await sleep(1000)
@@ -77,9 +81,11 @@ async function main() {
 			await obsWS.call("StopRecord")
 		}
 		await page.mouse.click(0, 0)
+		videoRequestReceived = false
 	})
 
-	let ignoreDivs = 5
+	let ignoreDivs = 6
+	let currentVideo = 5
 
 	ignoreDivs = await openVideo({ videoNumber: ignoreDivs, page })
 	console.log("Started video card clicked")
@@ -89,7 +95,7 @@ async function main() {
 		const videoPath = (recordStatus as unknown as { outputPath: string }).outputPath
 		const videoExt = path.extname(videoPath)
 
-		await fs.rename(videoPath, path.resolve(`./videos/video-${ignoreDivs - 2}${videoExt}`))
+		await fs.rename(videoPath, path.resolve(`./videos/video-${currentVideo++}${videoExt}`))
 
 		await sleep(5000)
 		ignoreDivs = await openVideo({ videoNumber: ignoreDivs, page })
