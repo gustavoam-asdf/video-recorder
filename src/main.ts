@@ -5,11 +5,23 @@ import {
 } from "./config"
 
 import OBSWebSocket from "obs-websocket-js"
-import { chromium } from "playwright"
+import { chromium, Page } from "playwright"
 import { cookies } from "./data/storage.json"
 import { sleep } from "./utils"
 import fs from "node:fs/promises"
 import path from "node:path"
+
+async function openVideo({ videoNumber, page }: { videoNumber: number, page: Page }) {
+	if (videoNumber % 4 === 1) {
+		videoNumber++
+	}
+	await page.dispatchEvent(
+		`div.post-content > div > div div:nth-child(${videoNumber++}) > div > a`,
+		"click"
+	)
+	console.log({ videoNumber })
+	return videoNumber
+}
 
 async function main() {
 	const obsWS = new OBSWebSocket()
@@ -67,11 +79,9 @@ async function main() {
 		await page.mouse.click(0, 0)
 	})
 
-	let ignoreDivs = 2
-	await page.dispatchEvent(
-		`div.post-content > div > div div:nth-child(${ignoreDivs++}) > div > a`,
-		"click"
-	)
+	let ignoreDivs = 5
+
+	ignoreDivs = await openVideo({ videoNumber: ignoreDivs, page })
 	console.log("Started video card clicked")
 
 	obsWS.addListener("RecordStateChanged", async recordStatus => {
@@ -82,12 +92,7 @@ async function main() {
 		await fs.rename(videoPath, path.resolve(`./videos/video-${ignoreDivs - 2}${videoExt}`))
 
 		await sleep(5000)
-		await page.dispatchEvent(
-			`div.post-content > div > div div:nth-child(${ignoreDivs++}) > div > a`,
-			"click"
-		).catch(async () => {
-			await browser.close()
-		})
+		ignoreDivs = await openVideo({ videoNumber: ignoreDivs, page })
 		console.log("Next video card clicked")
 
 	})
