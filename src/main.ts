@@ -34,8 +34,10 @@ async function main() {
 	await page.goto(WEB_TARGET)
 
 	page.on("requestfinished", async request => {
-		if (!request.url().includes("player.vimeo.com/video")) return
+		if (!request.url().startsWith("https://player.vimeo.com/video")) return
+		console.log({ videoUrl: request.url() })
 		await page.waitForSelector("div.ilightbox-holder.dark")
+		await sleep(1000)
 
 		const videoFrame = page.frames().find(frame => frame.url().includes("player.vimeo.com/video"))
 		if (!videoFrame) return
@@ -79,7 +81,7 @@ async function main() {
 
 		await fs.rename(videoPath, path.resolve(`./videos/video-${ignoreDivs - 2}${videoExt}`))
 
-		await sleep(10000)
+		await sleep(5000)
 		await page.dispatchEvent(
 			`div.post-content > div > div div:nth-child(${ignoreDivs++}) > div > a`,
 			"click"
