@@ -82,7 +82,9 @@ async function main() {
 		await page.dispatchEvent(
 			`div.post-content > div > div div:nth-child(${ignoreDivs++}) > div > a`,
 			"click"
-		)
+		).catch(async () => {
+			await browser.close()
+		})
 		console.log("Next video card clicked")
 
 	})
