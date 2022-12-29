@@ -8,6 +8,8 @@ import OBSWebSocket from "obs-websocket-js"
 import { chromium } from "playwright"
 import { cookies } from "./data/storage.json"
 import { sleep } from "./utils"
+import fs from "node:fs/promises"
+import path from "node:path"
 
 async function main() {
 	const obsWS = new OBSWebSocket()
@@ -72,7 +74,10 @@ async function main() {
 
 	obsWS.addListener("RecordStateChanged", async recordStatus => {
 		if (recordStatus.outputState !== "OBS_WEBSOCKET_OUTPUT_STOPPED") return
-		console.log({ videoPath: (recordStatus as unknown as { outputPath: string }).outputPath })
+		const videoPath = (recordStatus as unknown as { outputPath: string }).outputPath
+		const videoExt = path.extname(videoPath)
+
+		await fs.rename(videoPath, path.resolve(`./data/videos/video-${ignoreDivs - 1}${videoExt}`))
 
 		await page.dispatchEvent(
 			`div.post-content > div > div div:nth-child(${ignoreDivs++}) > div > a`,
