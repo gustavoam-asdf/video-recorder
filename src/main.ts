@@ -49,8 +49,10 @@ async function main() {
 			}
 		})
 		await videoFrame.waitForSelector("video")
-		await page.mouse.click(x, y)
-		await sleep(3000)
+		await page.mouse.click(x, y, {
+			delay: 2000,
+		})
+		await sleep(2000)
 		if (ENABLE_RECORD) {
 			await obsWS.call("StartRecord")
 			const videoDuration = await videoFrame.evaluate(() => {
@@ -77,7 +79,7 @@ async function main() {
 		const videoPath = (recordStatus as unknown as { outputPath: string }).outputPath
 		const videoExt = path.extname(videoPath)
 
-		await fs.rename(videoPath, path.resolve(`./data/videos/video-${ignoreDivs - 1}${videoExt}`))
+		await fs.rename(videoPath, path.resolve(`./videos/video-${ignoreDivs - 2}${videoExt}`))
 
 		await page.dispatchEvent(
 			`div.post-content > div > div div:nth-child(${ignoreDivs++}) > div > a`,
