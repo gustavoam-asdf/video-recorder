@@ -71,21 +71,22 @@ async function main() {
 		await sleep(1000)
 		if (ENABLE_RECORD) {
 			await obsWS.call("StartRecord")
+			await sleep(3000)
 			const videoDuration = await videoFrame.evaluate(() => {
 				const video = document.querySelector("video")
 				if (!video) return 0
 				return Math.ceil(video.duration * 1000)
 			})
 			console.log({ videoDuration })
-			await sleep(videoDuration)
+			await sleep(videoDuration - 3000)
 			await obsWS.call("StopRecord")
 		}
 		await page.mouse.click(0, 0)
 		videoRequestReceived = false
 	})
 
-	let ignoreDivs = 6
-	let currentVideo = 5
+	let ignoreDivs = 12
+	let currentVideo = 9
 
 	ignoreDivs = await openVideo({ videoNumber: ignoreDivs, page })
 	console.log("Started video card clicked")
@@ -95,7 +96,9 @@ async function main() {
 		const videoPath = (recordStatus as unknown as { outputPath: string }).outputPath
 		const videoExt = path.extname(videoPath)
 
-		await fs.rename(videoPath, path.resolve(`./videos/video-${currentVideo++}${videoExt}`))
+		const savedVideoPath = path.resolve(`./videos/video-${currentVideo++}${videoExt}`)
+		await fs.rename(videoPath, savedVideoPath)
+		console.log({ savedVideoPath })
 
 		await sleep(5000)
 		ignoreDivs = await openVideo({ videoNumber: ignoreDivs, page })
