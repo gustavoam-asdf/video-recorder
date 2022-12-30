@@ -12,6 +12,7 @@ import fs from "node:fs/promises"
 import path from "node:path"
 
 async function openVideo({ videoNumber, page }: { videoNumber: number, page: Page }) {
+	console.log({ videoNumber })
 	if (videoNumber % 4 === 1) {
 		videoNumber++
 	}
@@ -19,7 +20,6 @@ async function openVideo({ videoNumber, page }: { videoNumber: number, page: Pag
 		`div.post-content > div > div div:nth-child(${videoNumber++}) > div > a`,
 		"click"
 	)
-	console.log({ videoNumber })
 	return videoNumber
 }
 
@@ -68,7 +68,7 @@ async function main() {
 		})
 		await videoFrame.waitForSelector("video")
 		await page.mouse.click(x, y)
-		await sleep(1000)
+		await sleep(500)
 		if (ENABLE_RECORD) {
 			await obsWS.call("StartRecord")
 			await sleep(3000)
@@ -103,7 +103,6 @@ async function main() {
 		await sleep(5000)
 		ignoreDivs = await openVideo({ videoNumber: ignoreDivs, page })
 		console.log("Next video card clicked")
-
 	})
 
 }
